@@ -625,14 +625,21 @@ personParser = do
     pPhone <- phoneParser
     pure $ Person pAge pFirstName pSurname pSmoker pPhone
 
-{-
-personParser = Person <$> ageParser
-                      <*> sp firstNameParser
-                      <*> sp surnameParser
-                      <*> sp smokerParser
-                      <*> sp phoneParser
-    where sp a = spaces1 >>> a
--}
+
+-- personParser =
+--     ageParser >>= (\pAge ->
+--     spaces1 >>= (\_ ->
+--     firstNameParser >>= (\pFirstName ->
+--     spaces1 >>= (\_ ->
+--     surnameParser >>= (\pSurname ->
+--     spaces1 >>= (\_ ->
+--     smokerParser >>= (\pSmoker ->
+--     spaces1 >>= (\_ ->
+--     phoneParser >>= (\pPhone ->
+--     pure $ Person pAge pFirstName pSurname pSmoker pPhone)))))))))
+
+
+
 
 -- Make sure all the tests pass!
 
@@ -658,8 +665,8 @@ instance Applicative Parser where
     -> Parser a
     -> Parser b
   pf <*> pa = do
-    a <- pa
     f <- pf
+    a <- pa
     pure (f a)
 
 -- | Write a Monad instance for a @Parser@.
