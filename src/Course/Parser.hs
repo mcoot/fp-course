@@ -638,7 +638,12 @@ personParser = do
 --     phoneParser >>= (\pPhone ->
 --     pure $ Person pAge pFirstName pSurname pSmoker pPhone)))))))))
 
-
+-- personParser = Person <$> ageParser
+--                       <*> sp firstNameParser
+--                       <*> sp surnameParser
+--                       <*> sp smokerParser
+--                       <*> sp phoneParser
+--   where sp a = spaces1 >>> a
 
 
 -- Make sure all the tests pass!
