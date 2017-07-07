@@ -73,8 +73,15 @@ the contents of c
 -- /Tip:/ use @getArgs@ and @run@
 main ::
   IO ()
-main =
-  error "todo: Course.FileIO#main"
+main = do
+  args <- getArgs
+  case args of
+    Nil -> putStrLn "Pls give args :("
+    h:._ -> run h
+
+-- main = do
+--   args <- getArgs
+--   headOr (putStrLn "Pls give args :(") (run <$> args)
 
 type FilePath =
   Chars
@@ -83,31 +90,59 @@ type FilePath =
 run ::
   FilePath
   -> IO ()
-run =
-  error "todo: Course.FileIO#run"
+run fname = do
+  filesData <- readFile fname
+  files <- getFiles (lines filesData)
+  printFiles files
 
 getFiles ::
   List FilePath
   -> IO (List (FilePath, Chars))
-getFiles =
-  error "todo: Course.FileIO#getFiles"
+getFiles = sequence . ((<$>) getFile)
+--getFiles names = sequence (getFile <$> names)
+
 
 getFile ::
   FilePath
   -> IO (FilePath, Chars)
-getFile =
-  error "todo: Course.FileIO#getFile"
+getFile fname =((,) fname) <$> (readFile fname)
+
+-- getFile = lift2 (<$>) (,) readFile
+
+-- getFile fname = do
+--     contents <- readFile fname
+--     pure (fname, contents)
+
+-- >>= \f -> pure is equivalent to <$>!
 
 printFiles ::
   List (FilePath, Chars)
   -> IO ()
-printFiles =
-  error "todo: Course.FileIO#printFiles"
+printFiles x = traverse_ (uncurry printFile) x
+
+-- printFiles x = void (sequence ((uncurry printFile) <$> x))
 
 printFile ::
   FilePath
   -> Chars
   -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+printFile fname fdata = 
+  let list = (("====== " ++ fname) :. fdata :. Nil)
+  in traverse_ putStrLn list
 
+-- printFile fname fdata = putStrLn ("============ " ++ fname ++ "\n" ++ fdata)
+
+-- The java way:
+-- printFile fname fdata = do
+--   putStrLn "============" ++ fname
+--   putStrLn fdata
+--
+-- printFile fname fdata = 
+--   putStrLn ("============" ++ fname) *>
+--   putStrLn fdata
+
+traverse_ :: Applicative f =>
+  (a -> f b) ->
+  List a ->
+  f ()
+traverse_ func list = void (sequence (func <$> list))
